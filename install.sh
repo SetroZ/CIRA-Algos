@@ -14,7 +14,7 @@ CCFITS_URL="https://heasarc.gsfc.nasa.gov/fitsio/ccfits/CCfits-${CCFITS_VERSION}
 
 # Function to check if CFITSIO is installed
 check_cfitsio() {
-    if pkg-config --exists cfitsio; then
+    if [ -f "/usr/local/lib/libcfitsio.so" ] || [ -f "/usr/local/lib/libcfitsio.a" ]; then
         echo "CFITSIO is already installed."
         return 0
     else
