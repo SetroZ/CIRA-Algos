@@ -1,8 +1,8 @@
 #include <iostream>
 #include <chrono>
 #include <valarray>
-#include <CCfits/CCfits.h>
-#include <brute.h>
+#include <CCfits/CCfits>
+#include "brute.h"
 #include <iostream>
 #include <unistd.h>
 #include <limits.h>
@@ -11,8 +11,7 @@ using namespace CCfits;
 using namespace std;
 
 // Function to read a key from the FITS header and convert it to double
-double
-readKey(PHDU &primaryHDU, const string &key)
+double readKey(PHDU &primaryHDU, const string &key)
 {
     string key_str;
     primaryHDU.readKey(key, key_str); // Read key as a string
@@ -25,10 +24,9 @@ int main()
     // Paths and file
     // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
     string file_frb = "dm_50_fluence_500.fits";
-
+    std::cout << file_frb;
     // Open the FITS file
     FITS::setVerboseMode(true);
-    std::cout << file_frb;
 
     FITS fitsFile(file_frb, Read, true);
     PHDU &primaryHDU = fitsFile.pHDU();

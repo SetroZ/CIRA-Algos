@@ -4,19 +4,23 @@
         {
             "label": "build",
             "type": "shell",
-            "command": "cmake",
+            "command": "g++",
             "args": [
-                "--build",
-                "${workspaceFolder}/build",
-                "--config",
-                "Debug"
+                "-g",
+                "-o",
+                "main",
+                "src/main.cpp",  // Specify the correct path
+                "src/brute.cpp",  // Specify the correct path
+                "-I/usr/local/include",
+                "-L/usr/local/lib",
+                "-lCCfits",
+                "-lcfitsio"
             ],
             "group": {
                 "kind": "build",
                 "isDefault": true
             },
-            "problemMatcher": ["$gcc"],
-            "detail": "Generated task by CMake Tools."
+            "problemMatcher": ["$gcc"]
         }
     ]
 }

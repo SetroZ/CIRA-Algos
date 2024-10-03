@@ -2,13 +2,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug C++",
+            "name": "Debug Main",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/brute", // Adjust this path to your executable
-            "args": [],
+            "program": "${workspaceFolder}/src/main",
+            "args": [],  // Add program arguments here if needed
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}",
+            "cwd": "${workspaceFolder}/src",
             "environment": [],
             "externalConsole": false,
             "MIMode": "gdb",
@@ -20,10 +20,14 @@
                 }
             ],
             "preLaunchTask": "build",
-            "miDebuggerPath": "/usr/bin/gdb", // Adjust if needed
-            "miDebuggerArgs": "",
+
             "logging": {
+                "trace": true,
+                "traceResponse": true,
                 "engineLogging": true
+            },
+            "sourceFileMap": {
+                "/usr/src": "${workspaceFolder}/src"
             }
         }
     ]

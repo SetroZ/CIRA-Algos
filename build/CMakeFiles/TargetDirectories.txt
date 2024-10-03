@@ -1,3 +1,0 @@
-/home/vetro/CIRA/code/BruteForce/build/CMakeFiles/brute.dir
-/home/vetro/CIRA/code/BruteForce/build/CMakeFiles/edit_cache.dir
-/home/vetro/CIRA/code/BruteForce/build/CMakeFiles/rebuild_cache.dir

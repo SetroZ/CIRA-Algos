@@ -1,5 +1,3 @@
-// dedispersion_brute.cpp
-
 #include <iostream>
 #include <vector>
 #include <cmath>

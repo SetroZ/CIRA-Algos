@@ -1,1 +1,0 @@
-. "/home/vetro/CIRA/code/BruteForce/build/build/Release/generators/conanrunenv-release-x86_64.sh"
