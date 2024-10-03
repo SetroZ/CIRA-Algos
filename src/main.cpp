@@ -72,7 +72,7 @@ int main()
         d_DM = 1;
 
     // Calculate paths
-    map<int, map<double, vector<pair<int, int>>>> path_dict;
+    PathMap path_dict;
     calc_paths(t_min, t_max, d_t, f_min, f_max, d_f, DM_min, DM_max, d_DM, path_dict);
 
     // Perform dedispersion

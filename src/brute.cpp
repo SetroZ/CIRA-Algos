@@ -5,7 +5,9 @@
 #include <algorithm>
 
 using namespace std;
-
+using Path = vector<pair<int, int>>;               // [(t,freq_value),.....]
+using PathMap = map<int, map<double, Path>>;       // PathMap[DM][t_val] = Path
+using DispResults = map<int, map<double, double>>; // [DM][t_start] = mean_flux;
 // Constants
 const double K = (1.0 / (2.41 * pow(10, -4)));
 
@@ -15,12 +17,13 @@ double calc_time_delay_idx(double k, double DM, double d_t, double f_0, double f
     return ((k * DM) / d_t) * (1.0 / pow(f_1, 2) - 1.0 / pow(f_0, 2));
 }
 
-// Generate dedispersion paths
-vector<pair<int, int>> dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_t, double min_f, double max_f, double d_f)
-{
-    vector<pair<int, int>> path;
-    double t_idx = (t_0 - min_t) / d_t;
+// Generate dedispersion path for frequency values
 
+Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_t, double min_f, double max_f, double d_f)
+{
+    Path path;
+    double t_idx = (t_0 - min_t) / d_t;
+    // iterate through each frequency range from max -> min
     for (double f_val = max_f; f_val > min_f; f_val -= d_f)
     {
         double f_low = f_val - d_f;
@@ -42,11 +45,11 @@ vector<pair<int, int>> dedispersion_path(int DM, double t_0, double min_t, doubl
 }
 
 // Calculate all paths for given parameters
-void calc_paths(double min_t, double max_t, double d_t, double min_f, double max_f, double d_f, int min_DM, int max_DM, int d_DM, map<int, map<double, vector<pair<int, int>>>> &path_dict)
+void calc_paths(double min_t, double max_t, double d_t, double min_f, double max_f, double d_f, int min_DM, int max_DM, int d_DM, PathMap &path_dict)
 {
     for (int DM = min_DM; DM <= max_DM; DM += d_DM)
     {
-        path_dict[DM] = map<double, vector<pair<int, int>>>();
+        path_dict[DM] = map<double, Path>();
 
         for (double t = min_t; t <= max_t; t += d_t)
         {
@@ -57,9 +60,10 @@ void calc_paths(double min_t, double max_t, double d_t, double min_f, double max
 }
 
 // Dedisperse data and compute results
-map<int, map<double, double>> dedisperse(const vector<vector<double>> &data, const map<int, map<double, vector<pair<int, int>>>> &path_dict)
+// dedispersed_results[50][100] will return the mean flux for a DM of 50 pc cm-and starting time at 100 s.
+DispResults dedisperse(const vector<vector<double>> &data, const PathMap &path_dict)
 {
-    map<int, map<double, double>> dedispersed_results;
+    DispResults dedispersed_results;
     double sum = 0;
 
     for (const auto &[dm_key, times_map] : path_dict)
@@ -91,10 +95,10 @@ map<int, map<double, double>> dedisperse(const vector<vector<double>> &data, con
 }
 
 // Find FRBs based on SNR threshold
-pair<vector<tuple<int, double, double>>, map<int, map<double, double>>> find_frb(const map<int, map<double, double>> &results, double threshold)
+pair<vector<tuple<int, double, double>>, DispResults> find_frb(const DispResults &results, double threshold)
 {
     vector<tuple<int, double, double>> candidates;
-    map<int, map<double, double>> results_2;
+    DispResults results_2;
 
     for (const auto &[dm_key, time_series] : results)
     {
