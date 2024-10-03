@@ -55,7 +55,9 @@
         "stdexcept": "cpp",
         "streambuf": "cpp",
         "typeinfo": "cpp",
-        "valarray": "cpp"
+        "valarray": "cpp",
+        "cstring": "cpp",
+        "cinttypes": "cpp"
     },
 
     "cmake.sourceDirectory": "/home/vetro/CIRA/code/BruteForce",

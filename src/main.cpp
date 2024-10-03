@@ -20,11 +20,10 @@ double readKey(PHDU &primaryHDU, const string &key)
 
 int main()
 {
-
     // Paths and file
     // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
     string file_frb = "dm_50_fluence_500.fits";
-    std::cout << file_frb;
+
     // Open the FITS file
     FITS::setVerboseMode(true);
 

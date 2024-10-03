@@ -72,13 +72,13 @@ DispResults dedisperse(const vector<vector<double>> &data, const PathMap &path_d
 
         for (const auto &[t_start_key, path] : times_map)
         {
-            double num_pixels = static_cast<double>(path.size());
+            int num_pixels = path.size();
 
             if (num_pixels > 12)
-            {
+            { // Assuming 12 is the MIN_PATH_LENGTH
                 for (const auto &[time, freq] : path)
                 {
-                    sum += data[freq][time]; // Access the data matrix at the given time, frequency
+                    sum += data[freq - 1][time]; // Access the data matrix at the given time, frequency
                 }
 
                 double mean_flux = sum / num_pixels;
