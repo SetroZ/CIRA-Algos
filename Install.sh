@@ -9,8 +9,8 @@ CFITSIO_URL="https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-${CFITS
 INSTALL_DIR="/usr/local"
 
 # Define variables for CCfits
-CCFITS_VERSION="0.6.0"
-CCFITS_URL="https://heasarc.gsfc.nasa.gov/FTP/software/ccfits/c/CCfits-${CCFITS_VERSION}.tar.gz"
+CCFITS_VERSION="2.6.0"
+CCFITS_URL="https://heasarc.gsfc.nasa.gov/fitsio/ccfits/CCfits-${CCFITS_VERSION}.tar.gz"
 
 # Function to check if CFITSIO is installed
 check_cfitsio() {
