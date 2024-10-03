@@ -5,8 +5,8 @@
 #include <algorithm>
 
 using namespace std;
-using Path = vector<pair<int, int>>;               // [(t,freq_value),.....]
-using PathMap = map<int, map<double, Path>>;       // PathMap[DM][t_val] = Path
+using Path = vector<pair<int, int>>;               // [(t,freq_value),.....] Pixels
+using PathMap = map<int, map<double, Path>>;       // PathMap[DM][t_val] = Path | Pixels for a specific DM and T
 using DispResults = map<int, map<double, double>>; // [DM][t_start] = mean_flux;
 // Constants
 const double K = (1.0 / (2.41 * pow(10, -4)));
@@ -72,10 +72,10 @@ DispResults dedisperse(const vector<vector<double>> &data, const PathMap &path_d
 
         for (const auto &[t_start_key, path] : times_map)
         {
-            int num_pixels = path.size();
+            double num_pixels = static_cast<double>(path.size());
 
             if (num_pixels > 12)
-            { // Assuming 12 is the MIN_PATH_LENGTH
+            {
                 for (const auto &[time, freq] : path)
                 {
                     sum += data[freq][time]; // Access the data matrix at the given time, frequency
