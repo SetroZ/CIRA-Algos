@@ -3,7 +3,7 @@
 #include <cmath>
 #include <map>
 #include <algorithm>
-
+#include <valarray>
 using namespace std;
 using Path = vector<pair<int, int>>;               // [(t,freq_value),.....] Pixels
 using PathMap = map<int, map<double, Path>>;       // PathMap[DM][t_val] = Path | Pixels for a specific DM and T
@@ -61,7 +61,12 @@ void calc_paths(double min_t, double max_t, double d_t, double min_f, double max
 
 // Dedisperse data and compute results
 // dedispersed_results[50][100] will return the mean flux for a DM of 50 pc cm-and starting time at 100 s.
-DispResults dedisperse(const vector<vector<double>> &data, const PathMap &path_dict)
+
+int getIndex(int i, int x_size, int j)
+{
+    return i * x_size + j;
+}
+DispResults dedisperse(valarray<double> &data, const PathMap &path_dict, int x_size)
 {
     DispResults dedispersed_results;
     double sum = 0;
@@ -78,7 +83,9 @@ DispResults dedisperse(const vector<vector<double>> &data, const PathMap &path_d
             { // Assuming 12 is the MIN_PATH_LENGTH
                 for (const auto &[time, freq] : path)
                 {
-                    sum += data[freq - 1][time]; // Access the data matrix at the given time, frequency
+
+                    int idx = getIndex(freq - 1, x_size, time);
+                    sum += data[idx]; // Access the data matrix at the given time, frequency
                 }
 
                 double mean_flux = sum / num_pixels;

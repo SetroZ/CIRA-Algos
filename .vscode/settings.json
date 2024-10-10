@@ -1,7 +1,7 @@
 {
     "files.associations": {
         "*.c": "c",
-        "*.h": "plaintext",
+        "*.h": "cpp",
         "iostream": "cpp",
         "array": "cpp",
         "atomic": "cpp",
