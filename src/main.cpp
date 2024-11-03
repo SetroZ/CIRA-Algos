@@ -19,11 +19,12 @@ double readKey(PHDU &primaryHDU, const string &key)
     return std::stod(key_str);        // Convert to double and return
 }
 
-int main()
+int main(int argc, char *argv[])
 {
+
     // Paths and file
     // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
-    string file_frb = "dm_50_fluence_500.fits";
+    string file_frb = argv[1];
 
     // Open the FITS file
     FITS::setVerboseMode(true);
@@ -54,7 +55,6 @@ int main()
     // 2. Read the data into the flat valarray
     primaryHDU.read(flat_data); // Directly pass the valarray
 
-    // 3. Reshape the flat valarray back into a 2D vector
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> t = end - start;
     cout << "Reading " << t.count() << " seconds.\n";

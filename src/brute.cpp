@@ -47,6 +47,10 @@ Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_
 // Calculate all paths for given parameters
 void calc_paths(double min_t, double max_t, double d_t, double min_f, double max_f, double d_f, int min_DM, int max_DM, int d_DM, PathMap &path_dict)
 {
+    int max_t_idx = ((max_t - min_t) / d_t);
+    int min_t_idx = 0;
+    int max_f_idx = int((max_f - min_f) / d_f);
+    int min_f_idx = 0;
     for (int DM = min_DM; DM <= max_DM; DM += d_DM)
     {
         path_dict[DM] = map<double, Path>();
@@ -64,6 +68,7 @@ void calc_paths(double min_t, double max_t, double d_t, double min_f, double max
 
 int getIndex(int i, int x_size, int j)
 {
+    //
     return i * x_size + j;
 }
 DispResults dedisperse(valarray<double> &data, const PathMap &path_dict, int x_size)
