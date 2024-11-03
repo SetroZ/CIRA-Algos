@@ -6,6 +6,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <limits.h>
+#include "writer.h"
 
 using namespace CCfits;
 using namespace std;
@@ -25,6 +26,7 @@ int main(int argc, char *argv[])
     // Paths and file
     // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
     string file_frb = argv[1];
+    const char *cad_file_name = argv[2];
 
     // Open the FITS file
     FITS::setVerboseMode(true);
@@ -93,6 +95,6 @@ int main(int argc, char *argv[])
     {
         cout << "DM: " << dm << ", Time: " << t_start << ", SNR: " << snr << "\n";
     }
-
+    write_cand_file(all_frbs, 10, cad_file_name, 1);
     return 0;
 }

@@ -4,12 +4,8 @@
 #include <map>
 #include <algorithm>
 #include <valarray>
+#include "brute.h"
 using namespace std;
-using Path = vector<pair<int, int>>;               // [(t,freq_value),.....] Pixels
-using PathMap = map<int, map<double, Path>>;       // PathMap[DM][t_val] = Path | Pixels for a specific DM and T
-using DispResults = map<int, map<double, double>>; // [DM][t_start] = mean_flux;
-// Constants
-const double K = (1.0 / (2.41 * pow(10, -4)));
 
 // Function to calculate time delay
 double calc_time_delay_idx(double k, double DM, double d_t, double f_0, double f_1)
@@ -19,7 +15,7 @@ double calc_time_delay_idx(double k, double DM, double d_t, double f_0, double f
 
 // Generate dedispersion path for frequency values
 
-Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_t, double min_f, double max_f, double d_f)
+Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_t, double min_f, double max_f, double d_f, int min_t_idx, int max_t_idx, int min_f_idx, int max_f_idx)
 {
     Path path;
     double t_idx = (t_0 - min_t) / d_t;
@@ -35,10 +31,16 @@ Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_
         int int_t_path_idx = round(t_path_idx);
         int int_t_path_idx_low = round(t_path_idx_low);
         int freq_value = round(f_idx);
+        if ((min_t_idx <= int_t_path_idx && int_t_path_idx < max_t_idx) && (min_f_idx <= freq_value && freq_value < max_f_idx))
 
-        for (int t = int_t_path_idx; t <= int_t_path_idx_low; t++)
         {
-            path.push_back({t, freq_value});
+            for (int t = int_t_path_idx; t <= int_t_path_idx_low; t++)
+            {
+                if (min_t_idx <= t < max_t_idx)
+                {
+                    path.push_back({t, freq_value});
+                }
+            }
         }
     }
     return path;
@@ -58,7 +60,7 @@ void calc_paths(double min_t, double max_t, double d_t, double min_f, double max
         for (double t = min_t; t <= max_t; t += d_t)
         {
             double t_val = round(t * 1000) / 1000.0; // round to 3 dp
-            path_dict[DM][t_val] = dedispersion_path(DM, t_val, min_t, max_t, d_t, min_f, max_f, d_f);
+            path_dict[DM][t_val] = dedispersion_path(DM, t_val, min_t, max_t, d_t, min_f, max_f, d_f, min_t_idx, max_t_idx, min_f_idx, max_f_idx);
         }
     }
 }
@@ -107,9 +109,9 @@ DispResults dedisperse(valarray<double> &data, const PathMap &path_dict, int x_s
 }
 
 // Find FRBs based on SNR threshold
-pair<vector<tuple<int, double, double>>, DispResults> find_frb(const DispResults &results, double threshold)
+pair<vector<FRB>, DispResults> find_frb(const DispResults &results, double threshold)
 {
-    vector<tuple<int, double, double>> candidates;
+    vector<FRB> candidates;
     DispResults results_2;
 
     for (const auto &[dm_key, time_series] : results)
@@ -137,7 +139,11 @@ pair<vector<tuple<int, double, double>>, DispResults> find_frb(const DispResults
 
             if (signal_to_noise >= threshold)
             {
-                candidates.emplace_back(dm_key, t_start_key, signal_to_noise);
+                FRB frb;
+                frb.dm = dm_key;
+                frb.snr = signal_to_noise;
+                frb.time = t_start_key;
+                candidates.emplace_back(frb);
             }
         }
     }
