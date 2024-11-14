@@ -12,7 +12,7 @@
 using namespace CCfits;
 using namespace std;
 namespace fs = filesystem;
-
+double signal_to_noise_ratio = 7;
 // Function to read a key from the FITS header and convert it to double
 
 double readKey(PHDU &primaryHDU, const string &key)
@@ -51,13 +51,10 @@ void extractFRB(string frb_file, const char *output_path)
     double d_t = delta_time;
     double t_min = delta_time;
     double t_max = t_min + d_t * x_time_size;
-
+    std::chrono::_V2::system_clock::time_point start;
+    std::chrono::_V2::system_clock::time_point end;
     valarray<double> flat_data(y_freq_size * x_time_size);
-
     primaryHDU.read(flat_data);
-
-
-
 
     // Set dispersion measure parameters
     int DM_min = 0;
@@ -77,11 +74,9 @@ void extractFRB(string frb_file, const char *output_path)
     chrono::duration<double> dedispersion_time = end - start;
     cout << "Dedispersion completed in " << dedispersion_time.count() << " seconds.\n";
 
-    double signal_to_noise_ratio = 7;
-
     // Find FRBs
     start = chrono::high_resolution_clock::now();
-    auto [all_frbs, snr_results] = find_frb(results, signal_to_noise_ratio);
+    auto [all_frbs, snr_results] = find_frb(results, path_dict, signal_to_noise_ratio, delta_time);
     end = chrono::high_resolution_clock::now();
     chrono::duration<double> frb_find_time = end - start;
     cout << "FRB search completed in " << frb_find_time.count() << " seconds.\n";
@@ -91,10 +86,12 @@ void extractFRB(string frb_file, const char *output_path)
     if (all_frbs.size() > 0)
     {
         cout << "Found FRBs at: \n";
-        for (const auto &[dm, t_start, snr] : all_frbs)
+        for (const auto frb : all_frbs)
         {
-            cout << "DM: " << dm << ", Time: " << t_start << ", SNR: " << snr << "\n";
+            cout << "DM: " << frb.dm << ", Time: " << frb.time << ", SNR: " << frb.snr << "\n";
+          
         }
+
         write_cand_file(all_frbs, output_path);
     }
 }

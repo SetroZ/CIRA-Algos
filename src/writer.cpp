@@ -23,9 +23,10 @@ void write_cand_file(std::vector<FRB> &candidates, const char *filename)
     for (int i = 0; i < candidates.size(); i++)
     {
         FRB cand = candidates[i];
-
-        int sampno = cand.time;          // Time index (sampno)
-        int idt = sampno;                // Dispersion delay in samples
+        double S_N = cand.snr;
+        int sampno = cand.sampno; // Time index (sampno)
+        double secs_file_start = cand.time;
+        int idt = cand.idt;              // Dispersion delay in samples
         int boxcar = 0;                  // Placeholder for boxcar
         int beamno = 0;                  // Beam number, set to 0
         double mjd = 0.00;               // Modified Julian Date, set to 0.00
@@ -35,7 +36,7 @@ void write_cand_file(std::vector<FRB> &candidates, const char *filename)
 
         // Write candidate data to file
         fprintf(file, "%.2f %d %.4f %d %d %.2f %d %.2f %.2f %.2f %.2f\n",
-                cand.snr, sampno, cand.time, boxcar, idt, cand.dm, beamno, mjd,
+                S_N, sampno, cand.time, boxcar, idt, cand.dm, beamno, mjd,
                 median_total_power, rmsiqr_total_power, max_total_power);
     }
 

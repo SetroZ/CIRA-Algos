@@ -109,7 +109,7 @@ DispResults dedisperse(valarray<double> &data, const PathMap &path_dict, int x_s
 }
 
 // Find FRBs based on SNR threshold
-pair<vector<FRB>, DispResults> find_frb(const DispResults &results, double threshold)
+pair<vector<FRB>, DispResults> find_frb(const DispResults &results, const PathMap &path_dict, double threshold, double delta_time)
 {
     vector<FRB> candidates;
     DispResults results_2;
@@ -118,7 +118,6 @@ pair<vector<FRB>, DispResults> find_frb(const DispResults &results, double thres
     {
         results_2[dm_key] = map<double, double>();
         vector<double> fluxes;
-    
 
         for (const auto &[t_start_key, flux] : time_series)
         {
@@ -140,10 +139,15 @@ pair<vector<FRB>, DispResults> find_frb(const DispResults &results, double thres
 
             if (signal_to_noise >= threshold)
             {
+                double end_key = path_dict.at(dm_key).at(t_start_key).back().first;
                 FRB frb;
                 frb.dm = dm_key;
                 frb.snr = signal_to_noise;
                 frb.time = t_start_key;
+
+                frb.idt = (end_key - t_start_key) / delta_time;
+                frb.sampno = frb.time / delta_time;
+
                 candidates.emplace_back(frb);
             }
         }
