@@ -11,7 +11,7 @@
 
 using namespace CCfits;
 using namespace std;
-using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
+namespace fs = filesystem;
 
 // Function to read a key from the FITS header and convert it to double
 
@@ -21,39 +21,12 @@ double readKey(PHDU &primaryHDU, const string &key)
     primaryHDU.readKey(key, key_str); // Read key as a string
     return std::stod(key_str);        // Convert to double and return
 }
-bool isFitsFile(string const &fullString)
+bool isFitsFile(filesystem::__cxx11::directory_entry entry)
 {
-    string fits = ".fits";
-    if (fullString.length() >= fits.length())
-    {
-        return (0 == fullString.compare(fullString.length() - fits.length(), fits.length(), fits));
-    }
-    else
-    {
-        return false;
-    }
+    return entry.is_regular_file() && entry.path().extension() == ".fits";
 }
 
-int main(int argc, char *argv[])
-{
-
-    // Paths and file
-    // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
-    string frb_dir = argv[1];
-    const char *output_dir = argv[2];
-    for (const auto &dirEntry : recursive_directory_iterator(frb_dir))
-    {
-        auto path = dirEntry.path().string();
-        if (isFitsFile(path))
-        {
-            std::cout << path << std::endl;
-        }
-    }
-
-    return 0;
-}
-
-void ExtractFRB(char *frb_file, char *output_dir)
+void extractFRB(string frb_file, const char *output_path)
 {
 
     FITS::setVerboseMode(true);
@@ -78,15 +51,13 @@ void ExtractFRB(char *frb_file, char *output_dir)
     double d_t = delta_time;
     double t_min = delta_time;
     double t_max = t_min + d_t * x_time_size;
-    auto start = chrono::high_resolution_clock::now();
 
     valarray<double> flat_data(y_freq_size * x_time_size);
 
     primaryHDU.read(flat_data);
 
-    auto end = chrono::high_resolution_clock::now();
-    chrono::duration<double> t = end - start;
-    cout << "Reading " << t.count() << " seconds.\n";
+
+
 
     // Set dispersion measure parameters
     int DM_min = 0;
@@ -116,10 +87,38 @@ void ExtractFRB(char *frb_file, char *output_dir)
     cout << "FRB search completed in " << frb_find_time.count() << " seconds.\n";
 
     // Output FRB results
-    cout << "Found FRBs at: \n";
-    for (const auto &[dm, t_start, snr] : all_frbs)
+
+    if (all_frbs.size() > 0)
     {
-        cout << "DM: " << dm << ", Time: " << t_start << ", SNR: " << snr << "\n";
+        cout << "Found FRBs at: \n";
+        for (const auto &[dm, t_start, snr] : all_frbs)
+        {
+            cout << "DM: " << dm << ", Time: " << t_start << ", SNR: " << snr << "\n";
+        }
+        write_cand_file(all_frbs, output_path);
     }
-    // write_cand_file(all_frbs, 10, "s", 1);
+}
+int main(int argc, char *argv[])
+{
+    // Paths and file
+    // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
+    string frb_dir = argv[1];
+    string output_dir = argv[2];
+
+    for (const auto &entry : fs::recursive_directory_iterator(frb_dir))
+    {
+        if (isFitsFile(entry))
+        {
+            // Calculate relative path from input directory to the file
+            fs::path relative_path = fs::relative(entry.path(), frb_dir);
+
+            // Construct the new path in the output directory
+            fs::path output_path = output_dir / relative_path.replace_extension(".cad");
+
+            // Ensure the output subdirectory exists
+            fs::create_directories(output_path.parent_path());
+            extractFRB(entry.path().string(), output_path.string().c_str());
+        }
+    }
+    return 0;
 }
