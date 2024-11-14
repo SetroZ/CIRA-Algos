@@ -7,9 +7,11 @@
 #include <unistd.h>
 #include <limits.h>
 #include "writer.h"
+#include <filesystem>
 
 using namespace CCfits;
 using namespace std;
+using recursive_directory_iterator = std::filesystem::recursive_directory_iterator;
 
 // Function to read a key from the FITS header and convert it to double
 
@@ -19,19 +21,46 @@ double readKey(PHDU &primaryHDU, const string &key)
     primaryHDU.readKey(key, key_str); // Read key as a string
     return std::stod(key_str);        // Convert to double and return
 }
+bool isFitsFile(string const &fullString)
+{
+    string fits = ".fits";
+    if (fullString.length() >= fits.length())
+    {
+        return (0 == fullString.compare(fullString.length() - fits.length(), fits.length(), fits));
+    }
+    else
+    {
+        return false;
+    }
+}
 
 int main(int argc, char *argv[])
 {
 
     // Paths and file
     // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
-    string file_frb = argv[1];
-    const char *cad_file_name = argv[2];
+    string frb_dir = argv[1];
+    const char *output_dir = argv[2];
+    for (const auto &dirEntry : recursive_directory_iterator(frb_dir))
+    {
+        auto path = dirEntry.path().string();
+        if (isFitsFile(path))
+        {
+            std::cout << path << std::endl;
+        }
+    }
 
-    // Open the FITS file
+    return 0;
+}
+
+void ExtractFRB(char *frb_file, char *output_dir)
+{
+
     FITS::setVerboseMode(true);
 
-    FITS fitsFile(file_frb, Read, true);
+    FITS fitsFile(frb_file, Read, true);
+    cout << fitsFile.name();
+
     PHDU &primaryHDU = fitsFile.pHDU();
 
     // Extract necessary metadata from the FITS file header
@@ -50,12 +79,10 @@ int main(int argc, char *argv[])
     double t_min = delta_time;
     double t_max = t_min + d_t * x_time_size;
     auto start = chrono::high_resolution_clock::now();
-    // FITS data extraction
-    // 1. Use valarray instead of vector for flat_data
+
     valarray<double> flat_data(y_freq_size * x_time_size);
 
-    // 2. Read the data into the flat valarray
-    primaryHDU.read(flat_data); // Directly pass the valarray
+    primaryHDU.read(flat_data);
 
     auto end = chrono::high_resolution_clock::now();
     chrono::duration<double> t = end - start;
@@ -65,7 +92,7 @@ int main(int argc, char *argv[])
     int DM_min = 0;
     int DM_max = 150;
     int d_DM = static_cast<int>(d_t / (K * (1 / pow(f_min, 2) - 1 / pow(f_max, 2))));
-    if (d_DM < 1)
+    if (d_DM < 0)
         d_DM = 1;
 
     // Calculate paths
@@ -79,8 +106,7 @@ int main(int argc, char *argv[])
     chrono::duration<double> dedispersion_time = end - start;
     cout << "Dedispersion completed in " << dedispersion_time.count() << " seconds.\n";
 
-    // Define the signal-to-noise ratio
-    double signal_to_noise_ratio = 5.0; // Adjust as needed
+    double signal_to_noise_ratio = 7;
 
     // Find FRBs
     start = chrono::high_resolution_clock::now();
@@ -95,6 +121,5 @@ int main(int argc, char *argv[])
     {
         cout << "DM: " << dm << ", Time: " << t_start << ", SNR: " << snr << "\n";
     }
-    write_cand_file(all_frbs, 10, cad_file_name, 1);
-    return 0;
+    // write_cand_file(all_frbs, 10, "s", 1);
 }

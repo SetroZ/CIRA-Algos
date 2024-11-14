@@ -70,9 +70,9 @@ void calc_paths(double min_t, double max_t, double d_t, double min_f, double max
 
 int getIndex(int i, int x_size, int j)
 {
-    //
     return i * x_size + j;
 }
+
 DispResults dedisperse(valarray<double> &data, const PathMap &path_dict, int x_size)
 {
     DispResults dedispersed_results;
@@ -118,6 +118,7 @@ pair<vector<FRB>, DispResults> find_frb(const DispResults &results, double thres
     {
         results_2[dm_key] = map<double, double>();
         vector<double> fluxes;
+    
 
         for (const auto &[t_start_key, flux] : time_series)
         {
