@@ -91,7 +91,7 @@ DispResults dedisperse(valarray<double> &data, const PathMap &path_dict, int x_s
                 for (const auto &[time, freq] : path)
                 {
 
-                    int idx = getIndex(freq - 1, x_size, time);
+                    int idx = getIndex(freq, x_size, time);
                     sum += data[idx]; // Access the data matrix at the given time, frequency
                 }
 

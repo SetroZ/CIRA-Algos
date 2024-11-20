@@ -89,7 +89,6 @@ void extractFRB(string frb_file, const char *output_path)
         for (const auto frb : all_frbs)
         {
             cout << "DM: " << frb.dm << ", Time: " << frb.time << ", SNR: " << frb.snr << "\n";
-          
         }
 
         write_cand_file(all_frbs, output_path);
@@ -104,6 +103,7 @@ int main(int argc, char *argv[])
 
     for (const auto &entry : fs::recursive_directory_iterator(frb_dir))
     {
+
         if (isFitsFile(entry))
         {
             // Calculate relative path from input directory to the file
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
             // Construct the new path in the output directory
             fs::path output_path = output_dir / relative_path.replace_extension(".cad");
 
-            // Ensure the output subdirectory exists
+            // Ensure the output subdirectory existsre
             fs::create_directories(output_path.parent_path());
             extractFRB(entry.path().string(), output_path.string().c_str());
         }
