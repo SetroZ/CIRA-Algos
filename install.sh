@@ -6,7 +6,7 @@ set -e
 # Define variables for CFITSIO
 CFITSIO_VERSION="4.5.0"
 CFITSIO_URL="https://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-${CFITSIO_VERSION}.tar.gz"
-INSTALL_DIR="/usr/local"
+INSTALL_DIR="/home/lib"
 
 # Define variables for CCfits
 CCFITS_VERSION="2.6"
@@ -14,7 +14,7 @@ CCFITS_URL="https://heasarc.gsfc.nasa.gov/fitsio/ccfits/CCfits-${CCFITS_VERSION}
 
 # Function to check if CFITSIO is installed
 check_cfitsio() {
-    if [ -f "/usr/local/lib/libcfitsio.so" ] || [ -f "/usr/local/lib/libcfitsio.a" ]; then
+    if [ -f "/home/lib/libcfitsio.so" ] || [ -f "/usr/local/lib/libcfitsio.a" ]; then
         echo "CFITSIO is already installed."
         return 0
     else
@@ -107,4 +107,3 @@ echo 'export LD_LIBRARY_PATH="$INSTALL_DIR/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
 source ~/.bashrc
 
 echo "CCfits installation completed successfully!"
-g++ -g  -o main main.cpp brute.cpp -I/usr/local/include -L/usr/local/lib -lCCfits -lcfitsio

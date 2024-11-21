@@ -1,2 +1,20 @@
-g++ -g -Ofast  -o main main.cpp writer.cpp brute.cpp  -I./ -I/d/sw/cfitsio/3.470/include/ -L/home/curtin_marcins/software/code/lib/CCfits-2.6/.libs -lCCfits -L/d/sw/cfitsio/3.470/lib/ -lcfitsio
-./main  $1 $2
+#!/bin/bash
+
+#SBATCH --time=01:00:00
+#SBATCH --nodes=1
+#SBATCH --cpus-per-task=8
+#SBATCH --tasks-per-node=1
+#SBATCH --mem=32gb
+#SBATCH --output=./brute_force_youssef.o%j
+#SBATCH --error=./brute_force_youssef.e%j
+#SBATCH --export=NONE
+#SBATCH --constraint=knl
+
+module load gcc/14.2.0
+module load cfitsio/3.470
+
+
+
+export LD_LIBRARY_PATH=/home/curtin_marcins/software/code/lib/CCfits-2.6/.libs:$LD_LIBRARY_PATH
+./main  /data/curtin_mwafrb/sw/template/code/dedispersion/real_data/mwa_samples  /data/curtin_mwafrb/marcins/bruteforce/results/cad
+
