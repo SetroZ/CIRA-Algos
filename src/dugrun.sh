@@ -1,0 +1,2 @@
+g++ -g -Ofast  -o main main.cpp writer.cpp brute.cpp  -I./ -I/d/sw/cfitsio/3.470/include/ -L/home/curtin_marcins/software/code/lib/CCfits-2.6/.libs -lCCfits -L/d/sw/cfitsio/3.470/lib/ -lcfitsio
+./main  $1 $2
