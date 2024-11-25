@@ -32,7 +32,6 @@ Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_
         int int_t_path_idx_low = round(t_path_idx_low);
         int freq_value = round(f_idx);
         if ((min_t_idx <= int_t_path_idx && int_t_path_idx < max_t_idx) && (min_f_idx <= freq_value && freq_value < max_f_idx))
-
         {
             for (int t = int_t_path_idx; t <= int_t_path_idx_low; t++)
             {
