@@ -135,7 +135,7 @@ vector<FRB> find_frb(const DispResults &results, const PathMap &path_dict, doubl
         for (const auto &[t_start_key, flux] : time_series)
         {
             double signal_to_noise = (flux - median) / rms;
-            double end_key = path_dict.at(dm_key).at(t_start_key).back().first;
+
             int t = static_cast<int>(round(t_start_key));
             bool notFound = !(set.find(t) != set.end() || set.find(t - 1) != set.end() || set.find(t + 1) != set.end());
             if (signal_to_noise >= threshold && notFound)
@@ -144,7 +144,7 @@ vector<FRB> find_frb(const DispResults &results, const PathMap &path_dict, doubl
                 frb.dm = dm_key;
                 frb.snr = signal_to_noise;
                 frb.time = t_start_key;
-
+                double end_key = path_dict.at(dm_key).at(t_start_key).back().first;
                 frb.idt = (end_key - t_start_key) / delta_time;
                 frb.sampno = frb.time / delta_time;
                 set.emplace(t);

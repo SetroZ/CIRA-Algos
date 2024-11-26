@@ -1,6 +1,7 @@
 #!/bin/bash
 # valgrind  --leak-check=full --show-leak-kinds=all 
-cd ../src
+cd scripts
 ./build.sh
-./main  $1 $2
+
+../src/main  $1 $2
 
