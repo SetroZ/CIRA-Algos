@@ -76,7 +76,7 @@ void extractFRB(string frb_file, const char *output_path)
 
     // Find FRBs
     start = chrono::high_resolution_clock::now();
-    auto [all_frbs, snr_results] = find_frb(results, path_dict, signal_to_noise_ratio, delta_time);
+    auto all_frbs = find_frb(results, path_dict, signal_to_noise_ratio, delta_time);
     end = chrono::high_resolution_clock::now();
     chrono::duration<double> frb_find_time = end - start;
     cout << "FRB search completed in " << frb_find_time.count() << " seconds.\n";

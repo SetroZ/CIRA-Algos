@@ -5,8 +5,9 @@
 #include <algorithm>
 #include <valarray>
 #include "brute.h"
+#include <unordered_set>
 using namespace std;
-
+const double TIME_DELAY = 1;
 // Function to calculate time delay
 double calc_time_delay_idx(double k, double DM, double d_t, double f_0, double f_1)
 {
@@ -112,7 +113,7 @@ vector<FRB> find_frb(const DispResults &results, const PathMap &path_dict, doubl
 {
     vector<FRB> candidates;
     DispResults results_2;
-
+    unordered_set<int> set;
     for (const auto &[dm_key, time_series] : results)
     {
 
@@ -135,10 +136,10 @@ vector<FRB> find_frb(const DispResults &results, const PathMap &path_dict, doubl
         {
             double signal_to_noise = (flux - median) / rms;
             double end_key = path_dict.at(dm_key).at(t_start_key).back().first;
-
-            if (signal_to_noise >= threshold)
+            int t = static_cast<int>(round(t_start_key));
+            bool notFound = !(set.find(t) != set.end() || set.find(t - 1) != set.end() || set.find(t + 1) != set.end());
+            if (signal_to_noise >= threshold && notFound)
             {
-
                 FRB frb;
                 frb.dm = dm_key;
                 frb.snr = signal_to_noise;
@@ -146,7 +147,7 @@ vector<FRB> find_frb(const DispResults &results, const PathMap &path_dict, doubl
 
                 frb.idt = (end_key - t_start_key) / delta_time;
                 frb.sampno = frb.time / delta_time;
-
+                set.emplace(t);
                 candidates.emplace_back(frb);
             }
         }
