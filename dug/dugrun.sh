@@ -10,6 +10,7 @@
 #SBATCH --export=NONE
 #SBATCH --constraint=knl
 cd ..
+cd src
 module load gcc/14.2.0
 module load cfitsio/3.470
 
