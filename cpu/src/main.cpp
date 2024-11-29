@@ -41,16 +41,11 @@ void extractFRB(string frb_file, const char *output_path)
     long y_freq_size = primaryHDU.axis(1); // NAXIS2
 
     // Use the readKey function to get the header values as doubles
-    double start_freq = readKey(primaryHDU, "CRVAL2");
-    double delta_freq = readKey(primaryHDU, "CDELT2");
-    double delta_time = readKey(primaryHDU, "CDELT1");
-
-    double d_f = delta_freq;
-    double f_min = start_freq;
+    double f_min = readKey(primaryHDU, "CRVAL2");
+    double d_f = readKey(primaryHDU, "CDELT2");
+    double d_t = readKey(primaryHDU, "CDELT1");
     double f_max = start_freq + d_f * y_freq_size;
-    double d_t = delta_time;
-    double t_min = delta_time;
-    double t_max = t_min + d_t * x_time_size;
+    double t_max = d_t * 2  * x_time_size;
     std::chrono::_V2::system_clock::time_point start;
     std::chrono::_V2::system_clock::time_point end;
     valarray<double> flat_data(y_freq_size * x_time_size);
@@ -60,8 +55,11 @@ void extractFRB(string frb_file, const char *output_path)
     int DM_min = 0;
     int DM_max = 150;
     int d_DM = static_cast<int>(d_t / (K * (1 / pow(f_min, 2) - 1 / pow(f_max, 2))));
-    if (d_DM < 0)
+    if (d_DM < 0){
         d_DM = 1;
+    }
+
+    //PARALIZABLE STEP
 
     // Calculate paths
     PathMap path_dict;
@@ -81,6 +79,8 @@ void extractFRB(string frb_file, const char *output_path)
     chrono::duration<double> frb_find_time = end - start;
     cout << "FRB search completed in " << frb_find_time.count() << " seconds.\n";
 
+
+    //COPY BACK TO CPU
     // Output FRB results
 
     if (all_frbs.size() > 0)
