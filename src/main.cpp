@@ -97,7 +97,6 @@ void extractFRB(string frb_file, const char *output_path)
 int main(int argc, char *argv[])
 {
     // Paths and file
-    // string frb_dir = "../../dedispersion_implementations/data/simul/test_files/";
     string frb_dir = argv[1];
     string output_dir = argv[2];
 
@@ -114,6 +113,7 @@ int main(int argc, char *argv[])
 
             // Ensure the output subdirectory existsre
             fs::create_directories(output_path.parent_path());
+            //Run FRB Extraction and write .cand files
             extractFRB(entry.path().string(), output_path.string().c_str());
         }
     }
