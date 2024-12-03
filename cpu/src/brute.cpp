@@ -5,7 +5,9 @@
 #include <algorithm>
 #include <valarray>
 #include "brute.h"
+#include "io.h"
 #include <unordered_set>
+
 using namespace std;
 const double TIME_DELAY = 1;
 // Function to calculate time delay
@@ -16,18 +18,18 @@ double calc_time_delay_idx(double k, double DM, double d_t, double f_0, double f
 
 // Generate dedispersion path for frequency values
 
-Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_t, double min_f, double max_f, double d_f, int min_t_idx, int max_t_idx, int min_f_idx, int max_f_idx)
+Path dedispersion_path(int DM, double t_0, FRBFileData *frbData, int min_t_idx, int max_t_idx, int min_f_idx, int max_f_idx)
 {
     Path path;
-    double t_idx = (t_0 - min_t) / d_t;
+    double t_idx = (t_0 - frbData->d_t) / frbData->d_t;
     // iterate through each frequency range from max -> min
-    for (double f_val = max_f; f_val > min_f; f_val -= d_f)
+    for (double f_val = frbData->f_max; f_val > frbData->f_min; f_val -= frbData->d_f)
     {
-        double f_low = f_val - d_f;
-        double f_idx = (f_val - min_f) / d_f;
+        double f_low = f_val - frbData->d_f;
+        double f_idx = (f_val - frbData->f_min) / frbData->d_f;
 
-        double t_path_idx = t_idx + calc_time_delay_idx(K, DM, d_t, max_f, f_val);
-        double t_path_idx_low = t_idx + calc_time_delay_idx(K, DM, d_t, max_f, f_low);
+        double t_path_idx = t_idx + calc_time_delay_idx(K, DM, frbData->d_t, frbData->f_max, f_val);
+        double t_path_idx_low = t_idx + calc_time_delay_idx(K, DM, frbData->d_t, frbData->f_max, f_low);
 
         int int_t_path_idx = round(t_path_idx);
         int int_t_path_idx_low = round(t_path_idx_low);
@@ -47,20 +49,21 @@ Path dedispersion_path(int DM, double t_0, double min_t, double max_t, double d_
 }
 
 // Calculate all paths for given parameters
-void calc_paths(double min_t, double max_t, double d_t, double min_f, double max_f, double d_f, int min_DM, int max_DM, int d_DM, PathMap &path_dict)
+void calc_paths(FRBFileData *frbData, int min_DM, int max_DM, int d_DM, PathMap &path_dict)
 {
-    int max_t_idx = ((max_t - min_t) / d_t);
+
+    int max_t_idx = ((frbData->t_max - frbData->d_t) / frbData->d_t);
     int min_t_idx = 0;
-    int max_f_idx = int((max_f - min_f) / d_f);
+    int max_f_idx = int((frbData->f_max - frbData->f_min) / frbData->d_f);
     int min_f_idx = 0;
     for (int DM = min_DM; DM <= max_DM; DM += d_DM)
     {
         path_dict[DM] = map<double, Path>();
 
-        for (double t = min_t; t <= max_t; t += d_t)
+        for (double t = frbData->d_t; t <= frbData->t_max; t += frbData->d_t)
         {
             double t_val = round(t * 1000) / 1000.0; // round to 3 dp
-            path_dict[DM][t_val] = dedispersion_path(DM, t_val, min_t, max_t, d_t, min_f, max_f, d_f, min_t_idx, max_t_idx, min_f_idx, max_f_idx);
+            path_dict[DM][t_val] = dedispersion_path(DM, t_val, frbData, min_t_idx, max_t_idx, min_f_idx, max_f_idx);
         }
     }
 }

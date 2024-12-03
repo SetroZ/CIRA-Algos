@@ -1,9 +1,44 @@
-
-
-// writer.cpp
 #include <stdio.h>
 #include <vector>
-#include "writer.h"
+#include "io.h"
+#include "brute.h"
+#include <CCfits/CCfits>
+#include <valarray>
+using namespace std;
+using namespace CCfits;
+double readKey(PHDU &primaryHDU, const string &key)
+{
+    string key_str;
+    primaryHDU.readKey(key, key_str); // Read key as a string
+    return std::stod(key_str);        // Convert to double and return
+}
+
+void read_FITS(FRBFileData *frbData)
+{
+    FITS::setVerboseMode(true);
+
+    FITS fitsFile(frbData->name, Read, true);
+    cout << fitsFile.name();
+
+    PHDU &primaryHDU = fitsFile.pHDU();
+
+    // Extract necessary metadata from the FITS file header
+    frbData->x_time_size = primaryHDU.axis(0); // NAXIS1
+    long y_freq_size = primaryHDU.axis(1);     // NAXIS2
+
+    // Use the readKey function to get the header values as doubles
+    frbData->f_min = readKey(primaryHDU, "CRVAL2");
+    frbData->d_f = readKey(primaryHDU, "CDELT2");
+    frbData->d_t = readKey(primaryHDU, "CDELT1");
+    frbData->f_max = frbData->f_min + frbData->d_f * y_freq_size;
+    frbData->t_max = frbData->d_t * 2 * frbData->x_time_size;
+
+    // Initialize flat_data as a valarray with the required size (y_freq_size * x_time_size)
+    frbData->flat_data = valarray<double>(y_freq_size * frbData->x_time_size);
+
+    // Read the data into flat_data
+    primaryHDU.read(frbData->flat_data);
+}
 
 void write_cand_file(std::vector<FRB> &candidates, const char *filename)
 {

@@ -15,7 +15,7 @@ using PathMap = map<int, map<double, Path>>;       // PathMap[DM][t_val] = Path
 using DispResults = map<int, map<double, double>>; // [DM][t_start] = mean_flux;
 // Constants
 const double K = (1.0 / (2.41 * pow(10, -4)));
-// Example definition of the FRB structure in brute.h
+
 struct FRB
 {
     double snr;  // Signal-to-noise ratio
@@ -28,6 +28,7 @@ struct FRB
 // Function prototypes
 vector<FRB> find_frb(const DispResults &results, const PathMap &path_dict, double threshold, double delta_time);
 DispResults dedisperse(valarray<double> &data, const PathMap &path_dict, int x_size);
-void calc_paths(double min_t, double max_t, double d_t, double min_f, double max_f, double d_f, int min_DM, int max_DM, int d_DM, PathMap &path_dict);
+#include "io.h"
+void calc_paths(FRBFileData *frbData, int min_DM, int max_DM, int d_DM, PathMap &path_dict);
 
 #endif // DEDISPERSION_BRUTE_H
