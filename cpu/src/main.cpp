@@ -44,8 +44,8 @@ void extractFRB(string frb_file, const char *output_path)
     double f_min = readKey(primaryHDU, "CRVAL2");
     double d_f = readKey(primaryHDU, "CDELT2");
     double d_t = readKey(primaryHDU, "CDELT1");
-    double f_max = start_freq + d_f * y_freq_size;
-    double t_max = d_t * 2  * x_time_size;
+    double f_max = f_min + d_f * y_freq_size;
+    double t_max = d_t * 2 * x_time_size;
     std::chrono::_V2::system_clock::time_point start;
     std::chrono::_V2::system_clock::time_point end;
     valarray<double> flat_data(y_freq_size * x_time_size);
@@ -55,15 +55,16 @@ void extractFRB(string frb_file, const char *output_path)
     int DM_min = 0;
     int DM_max = 150;
     int d_DM = static_cast<int>(d_t / (K * (1 / pow(f_min, 2) - 1 / pow(f_max, 2))));
-    if (d_DM < 0){
+    if (d_DM < 0)
+    {
         d_DM = 1;
     }
 
-    //PARALIZABLE STEP
+    // PARALIZABLE STEP
 
     // Calculate paths
     PathMap path_dict;
-    calc_paths(t_min, t_max, d_t, f_min, f_max, d_f, DM_min, DM_max, d_DM, path_dict);
+    calc_paths(d_t, t_max, d_t, f_min, f_max, d_f, DM_min, DM_max, d_DM, path_dict);
 
     // Perform dedispersion
     start = chrono::high_resolution_clock::now();
@@ -74,14 +75,13 @@ void extractFRB(string frb_file, const char *output_path)
 
     // Find FRBs
     start = chrono::high_resolution_clock::now();
-    auto all_frbs = find_frb(results, path_dict, signal_to_noise_ratio, delta_time);
+    auto all_frbs = find_frb(results, path_dict, signal_to_noise_ratio, d_t);
     end = chrono::high_resolution_clock::now();
     chrono::duration<double> frb_find_time = end - start;
     cout << "FRB search completed in " << frb_find_time.count() << " seconds.\n";
 
-
-    //COPY BACK TO CPU
-    // Output FRB results
+    // COPY BACK TO CPU
+    //  Output FRB results
 
     if (all_frbs.size() > 0)
     {
@@ -113,7 +113,7 @@ int main(int argc, char *argv[])
 
             // Ensure the output subdirectory existsre
             fs::create_directories(output_path.parent_path());
-            //Run FRB Extraction and write .cand files
+            // Run FRB Extraction and write .cand files
             extractFRB(entry.path().string(), output_path.string().c_str());
         }
     }
