@@ -31,7 +31,7 @@ void read_FITS(FRBFileData *frbData)
     frbData->d_f = readKey(primaryHDU, "CDELT2");
     frbData->d_t = readKey(primaryHDU, "CDELT1");
     frbData->f_max = frbData->f_min + frbData->d_f * y_freq_size;
-    frbData->t_max = frbData->d_t * 2 * frbData->x_time_size;
+    frbData->t_max = frbData->d_t + frbData->d_t * frbData->x_time_size;
 
     // Initialize flat_data as a valarray with the required size (y_freq_size * x_time_size)
     frbData->flat_data = valarray<double>(y_freq_size * frbData->x_time_size);
