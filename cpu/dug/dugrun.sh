@@ -17,5 +17,5 @@ module load cfitsio/3.470
 
 
 export LD_LIBRARY_PATH=/home/curtin_marcins/software/code/lib/CCfits-2.6/.libs:$LD_LIBRARY_PATH
-./main  /data/curtin_mwafrb/sw/template/code/dedispersion/real_data/mwa_samples  /data/curtin_mwafrb/marcins/bruteforce/results/cad
+./main  /data/curtin_mwafrb/sw/template/data/frb /data/curtin_mwafrb/marcins/bruteforce/results/cad
 

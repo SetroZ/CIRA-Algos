@@ -5,3 +5,5 @@ main
 *.exe
 *.exp
 *.lib
+*.cad
+*.csv

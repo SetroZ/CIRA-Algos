@@ -4,6 +4,7 @@
 #include "brute.h"
 #include <CCfits/CCfits>
 #include <valarray>
+#include <filesystem>
 using namespace std;
 using namespace CCfits;
 double readKey(PHDU &primaryHDU, const string &key)
@@ -12,13 +13,18 @@ double readKey(PHDU &primaryHDU, const string &key)
     primaryHDU.readKey(key, key_str); // Read key as a string
     return std::stod(key_str);        // Convert to double and return
 }
+bool file_exists(const char *filename)
+{
+    struct stat buffer;
+    return stat(filename, &buffer) == 0 ? true : false;
+}
 
 void read_FITS(FRBFileData *frbData)
 {
     FITS::setVerboseMode(true);
 
     FITS fitsFile(frbData->name, Read, true);
-    cout << fitsFile.name();
+    cout << fitsFile.name() << '\n';
 
     PHDU &primaryHDU = fitsFile.pHDU();
 
@@ -40,9 +46,10 @@ void read_FITS(FRBFileData *frbData)
     primaryHDU.read(frbData->flat_data);
 }
 
-void write_cand_file(std::vector<FRB> &candidates, const char *filename)
+void write_Results(std::vector<FRB> &candidates, const char *file_path, double execTime, const char *benchmark_path)
 {
-    FILE *file = fopen(filename, "w");
+
+    FILE *file = fopen(file_path, "w");
     if (file == NULL)
     {
         perror("Error opening file");
@@ -76,4 +83,23 @@ void write_cand_file(std::vector<FRB> &candidates, const char *filename)
     }
 
     fclose(file);
+
+    // BenchMark File
+    FILE *benchmarkFile;
+    bool exists = file_exists(benchmark_path);
+
+    benchmarkFile = fopen(benchmark_path, "a");
+    if (benchmarkFile == NULL)
+    {
+        perror("Error opening file");
+        return;
+    }
+    if (!exists)
+    {
+
+        fprintf(benchmarkFile, "FileName,FRBs,ms \n");
+    }
+    std::string name = std::filesystem::path(file_path).filename().string();
+    fprintf(benchmarkFile, "%s,%ld,%.4f \n", name.c_str(), candidates.size(), execTime);
+    fclose(benchmarkFile);
 }

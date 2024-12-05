@@ -19,5 +19,5 @@ struct FRBFileData
 #include "brute.h"
 void read_FITS(FRBFileData *frbFile);
 
-void write_cand_file(std::vector<FRB> &candidates, const char *filename);
+void write_Results(std::vector<FRB> &candidates, const char *file_path, double execTime, const char *benchmark_path);
 #endif // BRUTEIO_H

@@ -22,7 +22,7 @@ bool isFitsFile(filesystem::__cxx11::directory_entry entry)
     return entry.is_regular_file() && entry.path().extension() == ".fits";
 }
 
-void extractFRB(string frb_file, const char *output_path)
+void extractFRB(string frb_file, const char *output_path, const char *benchmark_path)
 {
 
     FRBFileData frbData;
@@ -51,15 +51,15 @@ void extractFRB(string frb_file, const char *output_path)
     start = chrono::high_resolution_clock::now();
     auto results = dedisperse(frbData.flat_data, path_dict, frbData.x_time_size);
     end = chrono::high_resolution_clock::now();
-    chrono::duration<double> dedispersion_time = end - start;
-    cout << "Dedispersion completed in " << dedispersion_time.count() << " seconds.\n";
+    chrono::milliseconds dedispersion_time = chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    cout << "Dedispersion completed in " << dedispersion_time.count() << " ms.\n";
 
     // Find FRBs
     start = chrono::high_resolution_clock::now();
     auto all_frbs = find_frb(results, path_dict, signal_to_noise_ratio, frbData.d_t);
     end = chrono::high_resolution_clock::now();
-    chrono::duration<double> frb_find_time = end - start;
-    cout << "FRB search completed in " << frb_find_time.count() << " seconds.\n";
+    chrono::milliseconds frb_find_time = chrono::duration_cast<std::chrono::milliseconds>(end - start);
+    cout << "FRB search completed in " << frb_find_time.count() << " ms.\n";
 
     // COPY BACK TO CPU
     //  Output FRB results
@@ -72,7 +72,7 @@ void extractFRB(string frb_file, const char *output_path)
             cout << "DM: " << frb.dm << ", Time: " << frb.time << ", SNR: " << frb.snr << "\n";
         }
 
-        write_cand_file(all_frbs, output_path);
+        write_Results(all_frbs, output_path, frb_find_time.count() + dedispersion_time.count(), benchmark_path);
     }
 }
 int main(int argc, char *argv[])
@@ -91,11 +91,12 @@ int main(int argc, char *argv[])
 
             // Construct the new path in the output directory
             fs::path output_path = output_dir / relative_path.replace_extension(".cad");
-
+            fs::path benchmark_path = output_dir / (fs::path) "benchmark.csv";
             // Ensure the output subdirectory existsre
             fs::create_directories(output_path.parent_path());
+
             // Run FRB Extraction and write .cand files
-            extractFRB(entry.path().string(), output_path.string().c_str());
+            extractFRB(entry.path().string(), output_path.string().c_str(), benchmark_path.string().c_str());
         }
     }
     return 0;
