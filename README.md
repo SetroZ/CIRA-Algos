@@ -23,3 +23,10 @@
   - **io.cpp** handles file writing
 
 - **doc**: contains explanation of how the algorithm works.
+
+## Dug cheatsheet
+
+squeue -u `<username>`
+
+scontrol show job `JOBID`
+scancel `JOBID`
