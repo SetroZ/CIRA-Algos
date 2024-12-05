@@ -1,8 +1,21 @@
-## Running the code
+## Running code
 
-- ``
+#### Linux instructions
+
+- `git clone https://github.com/SetroZ/CIRA-Algos.git`
+- `cd cpu/scripts`
+- `chmod +x ./install.sh`
+- `./install.sh`
+- Verify that /usr/local is in $LD*LIBRARY_PATH" after running the script by typing*`echo $LD_LIBRARY_PATH"`
+- `./run.sh <input dir> <output dir>`
 
 ## Folder Structure
+
+- **doc**: contains explanation of how the algorithm works.
+
+- **data**: contains test data
+
+### cpu
 
 - **scripts** _cd into repo directory first_
 
@@ -18,13 +31,16 @@
 
 - **src**
 
-  - **brute.cpp** main functions
+  - **brute.cpp** bruteforce functions
   - **main.cpp** main program
-  - **io.cpp** handles file writing
+  - **io.cpp** file writing
 
-- **doc**: contains explanation of how the algorithm works.
+## gpu
+
+TODO
 
 ## Dug cheatsheet
-- squeue -u `<username>`
-- scontrol show job `JOBID`
-- scancel `JOBID`
+
+- squeue -u `<username>` _Shows job queue information for specific user_
+- scontrol show job `JOBID` _Shows job information_
+- scancel `JOBID` _Cancels job_
