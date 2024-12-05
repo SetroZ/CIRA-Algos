@@ -1,4 +1,4 @@
-cd scripts
+
 
 ./build.sh
 

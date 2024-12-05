@@ -33,15 +33,21 @@ check_ccfits() {
 }
 
 # Check for CFITSIO
-check_cfitsio
-cfitsio_installed=$?
+if ! check_cfitsio; then
+    cfitsio_installed=0
+else
+    cfitsio_installed=1
+fi
 
 # Check for CCfits
-check_ccfits
-ccfits_installed=$?
+if ! check_ccfits; then
+    ccfits_installed=0
+else
+    ccfits_installed=1
+fi
 
 # If both are installed, exit the script
-if [ $cfitsio_installed -eq 0 ] && [ $ccfits_installed -eq 0 ]; then
+if [ $cfitsio_installed -eq 1 ] && [ $ccfits_installed -eq 1 ]; then
     echo "Both CFITSIO and CCfits are already installed. Exiting."
     exit 0
 fi
@@ -51,10 +57,11 @@ echo "Updating package list..."
 sudo apt-get update
 
 echo "Installing build dependencies..."
+sudo apt-get install zlib1g-dev
 sudo apt-get install -y build-essential
 
 # Download CFITSIO if not installed
-if [ $cfitsio_installed -ne 0 ]; then
+if [ $cfitsio_installed -eq 0 ]; then
     echo "Downloading CFITSIO version ${CFITSIO_VERSION}..."
     wget $CFITSIO_URL -O cfitsio.tar.gz
 
@@ -78,7 +85,7 @@ if [ $cfitsio_installed -ne 0 ]; then
 fi
 
 # Download CCfits if not installed
-if [ $ccfits_installed -ne 0 ]; then
+if [ $ccfits_installed -eq 0 ]; then
     echo "Downloading CCfits version ${CCFITS_VERSION}..."
     wget $CCFITS_URL -O CCfits.tar.gz
 
