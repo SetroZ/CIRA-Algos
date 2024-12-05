@@ -20,6 +20,6 @@
 
   - **brute.cpp** main functions
   - **main.cpp** main program
-  - **write.cpp** handles file writing
+  - **io.cpp** handles file writing
 
 - **doc**: contains explanation of how the algorithm works.
