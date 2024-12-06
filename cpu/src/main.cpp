@@ -103,6 +103,9 @@ int main(int argc, char *argv[])
             catch (CCfits::HDU::NoSuchKeyword e)
             {
             }
+            catch (...)
+            {
+            }
         }
     }
     return 0;
