@@ -57,10 +57,10 @@
         "typeinfo": "cpp",
         "valarray": "cpp",
         "cstring": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "unordered_set": "cpp",
+        "fstream": "cpp"
     },
-
     "cmake.sourceDirectory": "/home/vetro/CIRA/code/BruteForce",
     "makefile.makefilePath": "/home/vetro/CIRA/code/BruteForce/build/Makefile",
-    
 }

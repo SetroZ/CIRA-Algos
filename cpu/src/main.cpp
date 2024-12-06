@@ -96,7 +96,15 @@ int main(int argc, char *argv[])
             fs::create_directories(output_path.parent_path());
 
             // Run FRB Extraction and write .cand files
-            extractFRB(entry.path().string(), output_path.string().c_str(), benchmark_path.string().c_str());
+            try
+            {
+                extractFRB(entry.path().string(), output_path.string().c_str(), benchmark_path.string().c_str());
+            }
+            catch (const std::exception &e)
+            {
+                // Print the exception message using what()
+                std::cout << "Exception caught: " << e.what() << std::endl;
+            }
         }
     }
     return 0;
