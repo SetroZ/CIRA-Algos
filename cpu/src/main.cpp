@@ -100,10 +100,8 @@ int main(int argc, char *argv[])
             {
                 extractFRB(entry.path().string(), output_path.string().c_str(), benchmark_path.string().c_str());
             }
-            catch (const std::exception &e)
+            catch (...)
             {
-                // Print the exception message using what()
-                std::cout << "Exception caught: " << e.what() << std::endl;
             }
         }
     }
