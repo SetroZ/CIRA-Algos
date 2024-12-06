@@ -56,6 +56,7 @@ void calc_paths(FRBFileData *frbData, int min_DM, int max_DM, int d_DM, PathMap 
     int min_t_idx = 0;
     int max_f_idx = int((frbData->f_max - frbData->f_min) / frbData->d_f);
     int min_f_idx = 0;
+
     for (int DM = min_DM; DM <= max_DM; DM += d_DM)
     {
         path_dict[DM] = map<double, Path>();
@@ -147,8 +148,16 @@ vector<FRB> find_frb(const DispResults &results, const PathMap &path_dict, doubl
                 frb.dm = dm_key;
                 frb.snr = signal_to_noise;
                 frb.time = t_start_key;
-                double end_key = path_dict.at(dm_key).at(t_start_key).back().first;
-                frb.idt = (end_key - t_start_key) / delta_time;
+                if (path_dict.at(dm_key).at(t_start_key).empty())
+                {
+                    frb.idt = 0;
+                }
+                else
+                {
+                    double end_key = path_dict.at(dm_key).at(t_start_key).back().first;
+                    frb.idt = (end_key - t_start_key) / delta_time;
+                }
+
                 frb.sampno = frb.time / delta_time;
                 set.emplace(t);
                 candidates.emplace_back(frb);
