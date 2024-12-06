@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
             {
                 extractFRB(entry.path().string(), output_path.string().c_str(), benchmark_path.string().c_str());
             }
-            catch (...)
+            catch (CCfits::HDU::NoSuchKeyword e)
             {
             }
         }
