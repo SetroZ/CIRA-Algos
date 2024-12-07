@@ -4,7 +4,7 @@
 #include <cmath>
 #include <map>
 #include <unordered_set>
-#include "/media/vetro/apps/code-projects/CIRA/code/bruteforce/cpu/src/brute.h"
+#include "../../cpu/src/brute.h" // change to your path for cpu brute.h
 using namespace std;
 
 // CUDA constants
